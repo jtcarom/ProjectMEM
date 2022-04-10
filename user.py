@@ -15,6 +15,9 @@ class User:
         self.address = address
         self.password = password
 
+    def __eq__(self, other):
+        return self.userid == other.getUserID()
+
     def getMessage(self):
         if self.messages:
             return self.messages.pop()
