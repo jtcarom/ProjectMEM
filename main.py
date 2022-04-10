@@ -1,6 +1,7 @@
 import user
 
 userList = []
+schedule = []
 login = ""
 
 def main():
@@ -41,9 +42,26 @@ def login():
                     login = tempUser   
 
             print("Successfully Logged in as " + login.getPosition() + "#" + login.getUserID() + "!")
-        
+                    
 def menu():
     # Here is where all menu options will be, such as:
     # Add new member, See Notifications, Class Schedule, Financials of the business (For Treasurer), etc.
+    manageCoachList()
+
+def viewSchedule():
+    return 1
+
+def manageCoachList():
+    index = 1
+    coachList = []
+    print("Coach List:\n")
+    for user in userList:
+        if user.getPosition() == "C":
+            coachList.append(user)
+            print(str(index) + ") " + user.getName())
+            index += 1
+
+def manageMemberList():
+    return 1
 
 main()
