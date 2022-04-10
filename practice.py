@@ -1,11 +1,13 @@
 import user
 class Practice:
     date = ""
+    time = ""
     coach = False
     memberList = []
 
-    def __init__(self,date,coach):
+    def __init__(self,date,time,coach):
         self.date = date
+        self.time = time
         self.coach = coach
 
     def getCoach(self):
@@ -13,6 +15,9 @@ class Practice:
 
     def getDate(self):
         return self.date
+
+    def getTime(self):
+        return self.time
 
     def addMember(self,member):
         self.memberList.append(member)

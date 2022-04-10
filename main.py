@@ -1,4 +1,5 @@
 import user
+import practice
 
 userList = []
 schedule = []
@@ -17,11 +18,32 @@ def setup():
     userfile.close()
     calendarfile.close()
     userfile = open("users.txt","r")
-    for aUser in userfile:
-        sections = aUser.split(' ')
+    for userA in userfile:
+        sections = userA.split(' ')
         userList.append(user.User(sections[0],sections[1],' '.join(sections[2:4:]),sections[4],' '.join(sections[5::8]),sections[8].replace("\n","")))
-    print(userList[0].getPassword())
     userfile.close()
+
+    calendarfile = open("calendar.txt","r")
+    for aPractice in calendarfile:
+        sections = aPractice.split(' ')
+        coach = ""
+        members = []
+        premembers = []
+        if len(sections) > 3:
+            premembers = sections[3::]
+        for userA in userList:
+            if userA.getUserID() == sections[2]:
+                coach = userA
+            if userA.getUserID() in premembers:
+                members.append(userA)
+        temp = practice.Practice(sections[0],sections[1],coach)
+        print(members)
+        for member in members:
+            temp.addMember(member)
+        schedule.append(temp)
+
+    calendarfile.close()
+
 
 def login():
     print("(1): Login\n(2): Create New Account")
