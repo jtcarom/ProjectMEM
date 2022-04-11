@@ -40,7 +40,6 @@ def setup():
         for member in members:
             temp.addMember(member)
         schedule.append(temp)
-
     calendarfile.close()
 
 
@@ -104,11 +103,38 @@ def addUser():
     return 1
 
 def removeUser(user):
-    return 1
+    # Also have to remove the user from any practices that they signed up for
+    f = open("calendar.txt","r")
+    lines = f.readlines()
+    f.close()
+    f = open("calendar.txt","w")
+    for line in lines:
+        line = line.replace(" "+user.getUserID(),"")
+        f.write(line)
+    f.close()
+    for aPractice in schedule:
+        aPractice.removeMember(user)
+    # Removing user from users.txt
+    index = 0
+    for i in range(0,len(userList)):
+        if userList[i] == user:
+            index = i
+    userList.remove(user)
+    f = open("users.txt","r")
+    lines = f.readlines()
+    f.close()
+    f = open("users.txt","w")
+    for i in range(0,len(lines)):
+        if index != i:
+            f.write(lines[i])
+    f.close()
+    print("User " + user.getName() + " Removed Successfully.")
+    input("Press any key to return to menu: ")
+    menu()
 
 def removeCoach(coach):
     practices = []
-    for i in len(schedule):
+    for i in range(0,len(schedule)):
         if coach == schedule[i].coach:
             f = open("calendar.txt","r")
             lines = f.readlines()
