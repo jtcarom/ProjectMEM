@@ -37,7 +37,6 @@ def setup():
             if userA.getUserID() in premembers:
                 members.append(userA)
         temp = practice.Practice(sections[0],sections[1],coach)
-        print(members)
         for member in members:
             temp.addMember(member)
         schedule.append(temp)
@@ -68,9 +67,15 @@ def login():
 def menu():
     # Here is where all menu options will be, such as:
     # Add new member, See Notifications, Class Schedule, Financials of the business (For Treasurer), etc.
+    input("Press any key to manage coach list: ")
     manageCoachList()
 
-def viewSchedule():
+def viewSchedule(coach):
+    for aPractice in schedule:
+        if aPractice.coach == coach:
+            print(aPractice)
+    input("Press any key to return to menu: ")
+    menu()
     return 1
 
 def manageCoachList():
@@ -80,8 +85,47 @@ def manageCoachList():
     for user in userList:
         if user.getPosition() == "C":
             coachList.append(user)
-            print(str(index) + ") " + user.getName())
+            print(str(index) + ") " + str(user))
             index += 1
+    print(str(index) + ") Add coach")
+    answer = input("Enter Coach or Option Number: ")
+    if(answer == str(index)):
+        addUser()
+        return
+    selected = coachList[int(answer) - 1]
+    print("1) View Schedule\n2) Remove Coach")
+    answer = input("Enter Option Number: ")
+    if(answer == "1"):
+        viewSchedule(selected)
+    else:
+        removeCoach(selected)
+
+def addUser():
+    return 1
+
+def removeUser(user):
+    return 1
+
+def removeCoach(coach):
+    practices = []
+    for i in len(schedule):
+        if coach == schedule[i].coach:
+            f = open("calendar.txt","r")
+            lines = f.readlines()
+            f.close()
+            f = open("calendar.txt","w")
+            index = 0
+            for line in lines:
+                if index != i:
+                    f.write(line)
+                index += 1
+            f.close()
+            practices.append(schedule[i])
+    for aPractice in practices:
+        for member in aPractice.getMemberList():
+            member.messageReceive(aPractice.getDate()+" Practice at "+aPractice.getTime()+" with Coach: "+aPractice.getCoach().getName()+" has been cancelled.")
+        schedule.remove(aPractice)
+    removeUser(coach)
 
 def manageMemberList():
     return 1

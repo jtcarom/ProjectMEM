@@ -10,6 +10,15 @@ class Practice:
         self.time = time
         self.coach = coach
 
+    def __eq__(self, other):
+        return self.coach == other.getCoach() and self.date == other.getDate() and self.time == other.getTime()
+
+    def __str__(self):
+        returnstr = self.date+" Practice at: "+self.time+"\nCoach: "+str(self.coach)+"\nMembers:"
+        for member in self.memberList:
+            returnstr += "\n"+str(member)
+        return returnstr
+
     def getCoach(self):
         return self.coach
 

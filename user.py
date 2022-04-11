@@ -18,13 +18,16 @@ class User:
     def __eq__(self, other):
         return self.userid == other.getUserID()
 
+    def __str__(self):
+        return self.position+"#"+self.userid+" - "+self.name+" | Contact: "+self.number
+
     def getMessage(self):
         if self.messages:
             return self.messages.pop()
         else:
             return ""
 
-    def messageReceieve(self,message):
+    def messageReceive(self,message):
         self.messages.append(message)
 
     def messageCount(self):
