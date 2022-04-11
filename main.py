@@ -89,7 +89,7 @@ def manageCoachList():
     print(str(index) + ") Add coach")
     answer = input("Enter Coach or Option Number: ")
     if(answer == str(index)):
-        addUser()
+        addUser("C")
         return
     selected = coachList[int(answer) - 1]
     print("1) View Schedule\n2) Remove Coach")
@@ -99,8 +99,19 @@ def manageCoachList():
     else:
         removeCoach(selected)
 
-def addUser():
-    return 1
+def addUser(position):
+    name = input("Enter Name: ")
+    userid = len(userList)
+    num = input("Enter Contact #: ")
+    address = input("Enter Address: ")
+    password = input("Enter Password: ")
+    f = open("users.txt","a")
+    f.write(position + " " + userid + " " + name + " " + num +" " + address +" " + password)
+    f.close()
+    userList.append(user.User(position,userid,name,num,address,password))
+    print("Successfully added "+position+"#"+userid+" "+name+".")
+    input("Press any key to return to menu: ")
+    menu()
 
 def removeUser(user):
     # Also have to remove the user from any practices that they signed up for
