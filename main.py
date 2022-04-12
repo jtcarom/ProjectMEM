@@ -274,23 +274,58 @@ def removePracticeMembers(index):
         for i in range(0,len(schedule[index].getMemberList())):
             print(str(i+1)+") "+schedule[index].getMemberList()[i])
         answer = input("Select Member Number to Remove: ")
-        member = schedule[index].getMemberList()[int(answer)-1]
-        f = open("calendar.txt")
-        lines = f.readlines()
-        f.close()
-        f = open("calendar.txt","w")
-        for i in range(0,len(lines)):
-            line = lines[i]
-            if i == index:
-                line = line.replace(" "+member.getMemberID(),"")
-            f.write(line)
-        f.close()
-        schedule[index].removeMember(member)
-        print("M#"+member.getMemberID()+" has been removed.")
+        mem = schedule[index].getMemberList()[int(answer)-1]
+        removeAPracticeMember(index,mem)
+        print("M#"+mem.getMemberID()+" has been removed.")
         answer = input("Would you like to remove another member? \"Y\" or \"N\"")
         if answer == "N":
             stillRemoving = False
+    return 1
 
+def removeAPracticeMember(index,mem):
+    schedule[index].removeMember(mem)
+    f = open("calendar.txt")
+    lines = f.readlines()
+    f.close()
+    f = open("calendar.txt","w")
+    for i in range(0,len(lines)):
+        line = lines[i]
+        if i == index:
+            line = line.replace(" "+mem.getMemberID(),"")
+        f.write(line)
+    f.close()
+    return 1
+
+def addPracticeMembers(index):
+    stillAdding = True
+    while(stillAdding):
+        for i in range(0,len(memberList)):
+            print(str(i+1)+") "+memberList[i])
+        answer = input("Enter Member Number to Add:")
+        mem = memberList[int(answer)-1]
+        addAPracticecMember(index,mem)
+        print("M#"+mem.getMemberID()+" has been added.")
+        answer = input("Would you like to add another member? \"Y\" or \"N\"")
+        if answer == "N":
+            stillAdding = False
+    return 1
+
+def addAPracticecMember(index,mem):
+    schedule[index].addMember(mem)
+    f = open("calendar.txt")
+    lines = f.readlines()
+    f.close()
+    f = open("calendar.txt","w")
+    for i in range(0,len(lines)):
+        line = lines[i]
+        if i == index:
+            line = line.replace("\n","")
+            line = line + " " + mem.getMemberID()
+            if(index != len(memberList())-1):
+                line = line + "\n"
+        f.write(line)
+    f.close()
+    return 1
 
 def manageSchedule(coach):
     for i in range(0,len(schedule)):
@@ -298,18 +333,15 @@ def manageSchedule(coach):
             print(str(i+1)+") - "+schedule[i])
     answer = input("Enter Practice Number to Manage: ")
     prac = schedule[int(answer) - 1]
-    print("Would you like to:\n1) Remove Schedule\n2) Schedule Member\n3) Remove Member")
+    print("Would you like to:\n1) Cancel Practice\n2) Schedule Member\n3) Remove Member")
     answer = input("Enter Option Number: ")
     if answer == "1":
         removePractice(int(answer) - 1)
     elif answer == "2":
-        
+        addPracticeMembers(int(answer)-1)
     elif answer == "3":
         removePracticeMembers(int(answer) - 1)
-    
-    return 1
-
-def manageMemberList(prac,coach):
+    menu()
     return 1
 
 main()
