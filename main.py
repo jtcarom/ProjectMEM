@@ -275,15 +275,15 @@ def removePracticeMembers(index):
             print(str(i+1)+") "+schedule[index].getMemberList()[i])
         answer = input("Select Member Number to Remove: ")
         mem = schedule[index].getMemberList()[int(answer)-1]
-        removeAPracticeMember(index,mem)
+        removeAPracticeMember(index,int(answer)-1)
         print("M#"+mem.getMemberID()+" has been removed.")
         answer = input("Would you like to remove another member? \"Y\" or \"N\"")
         if answer == "N":
             stillRemoving = False
     return 1
 
-def removeAPracticeMember(index,mem):
-    schedule[index].removeMember(mem)
+def removeAPracticeMember(index,memIndex):
+    schedule[index].removeMember(memberList[memIndex])
     f = open("calendar.txt")
     lines = f.readlines()
     f.close()
@@ -291,9 +291,12 @@ def removeAPracticeMember(index,mem):
     for i in range(0,len(lines)):
         line = lines[i]
         if i == index:
-            line = line.replace(" "+mem.getMemberID(),"")
+            line = line.replace(" "+memberList[memIndex].getMemberID(),"")
         f.write(line)
     f.close()
+    prac = schedule[index]
+    memberList[memIndex].messageReceive("You have been removed from the "+prac.getDate()+
+    " Practice at "+prac.getTime()+" with Coach "+prac.getCoach().getName()+". Please contact "+prac.getCoach().getNumber()+" for more details.")
     return 1
 
 def addPracticeMembers(index):
@@ -303,15 +306,15 @@ def addPracticeMembers(index):
             print(str(i+1)+") "+memberList[i])
         answer = input("Enter Member Number to Add:")
         mem = memberList[int(answer)-1]
-        addAPracticecMember(index,mem)
+        addAPracticecMember(index,int(answer)-1)
         print("M#"+mem.getMemberID()+" has been added.")
         answer = input("Would you like to add another member? \"Y\" or \"N\"")
         if answer == "N":
             stillAdding = False
     return 1
 
-def addAPracticecMember(index,mem):
-    schedule[index].addMember(mem)
+def addAPracticecMember(index,memIndex):
+    schedule[index].addMember(memberList[memIndex])
     f = open("calendar.txt")
     lines = f.readlines()
     f.close()
@@ -320,11 +323,13 @@ def addAPracticecMember(index,mem):
         line = lines[i]
         if i == index:
             line = line.replace("\n","")
-            line = line + " " + mem.getMemberID()
-            if(index != len(memberList())-1):
+            line = line + " " + memberList[memIndex].getMemberID()
+            if(index != len(schedule)-1):
                 line = line + "\n"
         f.write(line)
     f.close()
+    memberList[memIndex].messageReceive("You have been added to the "+prac.getDate()+
+    " Practice at "+prac.getTime()+" with Coach "+prac.getCoach().getName()+". Please contact "+prac.getCoach().getNumber()+" for more details.")
     return 1
 
 def manageSchedule(coach):
@@ -341,7 +346,7 @@ def manageSchedule(coach):
         addPracticeMembers(int(answer)-1)
     elif answer == "3":
         removePracticeMembers(int(answer) - 1)
+    input("Enter any key to return to menu: ")
     menu()
-    return 1
 
 main()
