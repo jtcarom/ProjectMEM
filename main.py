@@ -114,6 +114,11 @@ def memberMenu(member):
         elif answer == "2":
             if int(login.getFrequency()) > int(login.getPaid()):
                 payPractice()
+                amount = 10.0
+                fee = 5.0
+                userList[treasurerIndex].messageReceive("M#"+login.getMemberID()+" has paid an outstanding payment of"+str(amount+fee)+".")
+                input("Enter any key to return to menu: ")
+                memberMenu(login)
             else:
                 print("You have no outstanding payments to make.")
         elif answer == "3":
@@ -408,7 +413,6 @@ def payPractice():
         userfile.write(line)
     userfile.close()
     print("Payment Processed.")
-    input("Enter any key to return to menu: ")
-    memberMenu(login)
+    return 1
 
 main()
