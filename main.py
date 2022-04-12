@@ -16,8 +16,8 @@ def main():
 def setup():
     # Creates files if they don't already exist
     userfile = open("users.txt","a")
-    calendarfile = open("calendar.txt","a")
     userfile.close()
+    calendarfile = open("calendar.txt","a")
     calendarfile.close()
     userfile = open("users.txt","r")
     for userA in userfile:
@@ -104,7 +104,7 @@ def memberMenu(member):
     if int(member.getFrequency()) > int(member.getPaid()):            #if the member has skipped payment once
         print("REMINDER: Due to a skipped payment, you are now subject to a penalty fee and possible exclusion from the group.")
     if int(member.getFrequency()) < int(member.getPaid()):
-        print("Congratulations! You have not skipped any payments within the past 3 months and you have received a complimentary discount for 10% off one class.")
+        print("Congratulations! You have not skipped any payments within the past 3 months and you have received a complimentary discount for 10%% off one class.")
     checkInput = False
     answer = input("Enter option number: ")
     while (not checkInput):
@@ -117,7 +117,7 @@ def memberMenu(member):
 
 def viewSchedule(coach):
     for aPractice in schedule:
-        if aPractice.coach == coach:
+        if aPractice.getCoach() == coach:
             print(aPractice)
     input("Press any key to return to menu: ")
     menu()
@@ -306,14 +306,14 @@ def addPracticeMembers(index):
             print(str(i+1)+") "+memberList[i])
         answer = input("Enter Member Number to Add:")
         mem = memberList[int(answer)-1]
-        addAPracticecMember(index,int(answer)-1)
+        addAPracticeMember(index,int(answer)-1)
         print("M#"+mem.getMemberID()+" has been added.")
         answer = input("Would you like to add another member? \"Y\" or \"N\"")
         if answer == "N":
             stillAdding = False
     return 1
 
-def addAPracticecMember(index,memIndex):
+def addAPracticeMember(index,memIndex):
     schedule[index].addMember(memberList[memIndex])
     f = open("calendar.txt")
     lines = f.readlines()
@@ -338,7 +338,7 @@ def manageSchedule(coach):
             print(str(i+1)+") - "+schedule[i])
     answer = input("Enter Practice Number to Manage: ")
     prac = schedule[int(answer) - 1]
-    print("Would you like to:\n1) Cancel Practice\n2) Schedule Member\n3) Remove Member")
+    print("Would you like to:\n1) Cancel Practice\n2) Add a Member\n3) Remove a Member")
     answer = input("Enter Option Number: ")
     if answer == "1":
         removePractice(int(answer) - 1)
@@ -346,6 +346,39 @@ def manageSchedule(coach):
         addPracticeMembers(int(answer)-1)
     elif answer == "3":
         removePracticeMembers(int(answer) - 1)
+    input("Enter any key to return to menu: ")
+    menu()
+
+def joinPractice():
+    for i in range(0,len(schedule)):
+        print(str(i+1)+") "+schedule[i])
+    answer = input("Enter Practice # you would like to join or \"E\" if you would like to exit to the menu: ")
+    if answer == "E": 
+        menu()
+    addAPracticeMember(int(answer)-1,memberList.index(login))
+    input("Enter any key to return to menu: ")
+    menu()
+
+def payPractice():
+    if int(login.getFrequency()) > int(login.getPaid()):
+        print("Payment Methods:\n1) Credit Card\n2) Debit")
+        input("Enter Option Number")
+        input("Please Tap Card, then enter any key: ")
+        memberList[memberList.index(login)].pay()
+        userfile = open("users.txt","r")
+        lines = userfile.lines()
+        userfile.close()
+        userfile = open("users.txt","w")
+        for line in lines:
+            sections = line.split(' ')
+            if login.getMemberID() == sections[1]:
+                line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(login)].getPaid())
+            userfile.write(line)
+        userfile.close()
+        print("Payment Processed.")
+        else:
+        print("You have no outstanding payments to make.")
+
     input("Enter any key to return to menu: ")
     menu()
 

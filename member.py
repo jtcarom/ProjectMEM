@@ -60,3 +60,7 @@ class Member:
 
     def getPaid(self):
         return self.paid
+
+    def pay(self):
+        self.paid = str(int(self.paid)+1)
+        return 1
