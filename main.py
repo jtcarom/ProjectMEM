@@ -7,6 +7,7 @@ userList = []
 memberList = []
 schedule = []
 login = ""
+treasurerIndex = 0
 
 def main():
     #print("Hello World")
@@ -110,10 +111,25 @@ def memberMenu(member):
     while (not checkInput):
         if answer == "1":
             checkInput = True
-            #do something
+        elif answer == "2":
+            if int(login.getFrequency()) > int(login.getPaid()):
+                payPractice()
+            else:
+                print("You have no outstanding payments to make.")
+        elif answer == "3":
+            joinPractice()
+        elif answer == "4"
+            viewMemberSchedule()
         else:
             answer = input("Incorrect option number, please re-enter: ")
 
+def viewMemberSchedule(member):
+    print("Your Practices:\n")
+    for aPractice in schedule:
+        if member in aPractice.getMemberList():
+            print(aPractice)
+    input("Press any key to return to menu")
+    memberMenu(member)
 
 def viewSchedule(coach):
     for aPractice in schedule:
@@ -185,7 +201,7 @@ def addUser(position):
         input("Press any key to redirect to the member menu.")
         memberMenu(mmbr)
     else:
-        userid = len(userList)
+        userid = random.randint(1000,9999)
         f = open("users.txt","a")
         f.write("\n" + position + " " + str(userid) + " " + name + " " + num + " " + address + " " + password)
         f.close()
@@ -355,31 +371,30 @@ def joinPractice():
     answer = input("Enter Practice # you would like to join or \"E\" if you would like to exit to the menu: ")
     if answer == "E": 
         menu()
-    addAPracticeMember(int(answer)-1,memberList.index(login))
+    index = int(answer)-1
+    addAPracticeMember(index,memberList.index(login))
+    userList[userList.index(schedule[index].getCoach())].messageReceive("M#"+login.getMemberID()+" "+login.getName()+" has joined your "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
+    userList[treasurerIndex].messageReceive("M#"+login.getMemberID()+" "+login.getName()+" has joined Coach "+schedule[index].getCoach().getName()+"'s "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
     input("Enter any key to return to menu: ")
-    menu()
+    memberMenu(login)
 
 def payPractice():
-    if int(login.getFrequency()) > int(login.getPaid()):
-        print("Payment Methods:\n1) Credit Card\n2) Debit")
-        input("Enter Option Number")
-        input("Please Tap Card, then enter any key: ")
-        memberList[memberList.index(login)].pay()
-        userfile = open("users.txt","r")
-        lines = userfile.lines()
-        userfile.close()
-        userfile = open("users.txt","w")
-        for line in lines:
-            sections = line.split(' ')
-            if login.getMemberID() == sections[1]:
-                line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(login)].getPaid())
-            userfile.write(line)
-        userfile.close()
-        print("Payment Processed.")
-        else:
-        print("You have no outstanding payments to make.")
-
+    print("Payment Methods:\n1) Credit Card\n2) Debit")
+    input("Enter Option Number")
+    input("Please Tap Card, then enter any key: ")
+    memberList[memberList.index(login)].pay()
+    userfile = open("users.txt","r")
+    lines = userfile.lines()
+    userfile.close()
+    userfile = open("users.txt","w")
+    for line in lines:
+        sections = line.split(' ')
+        if login.getMemberID() == sections[1]:
+            line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(login)].getPaid())
+        userfile.write(line)
+    userfile.close()
+    print("Payment Processed.")
     input("Enter any key to return to menu: ")
-    menu()
+    memberMenu(login)
 
 main()
