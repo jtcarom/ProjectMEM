@@ -201,32 +201,27 @@ def removeUser(user):
     f.close()
     f = open("calendar.txt","w")
     for line in lines:
-        line = line.replace(" "+user.getUserID(),"")
+        if user.getPosition != "M":
+            line = line.replace(" "+user.getUserID(),"")
+        else:
+            line = line.replace(" "+user.getMemberID(),"")
         f.write(line)
     f.close()
     for aPractice in schedule:
         aPractice.removeMember(user)
     # Removing user from users.txt
-    index = 0
-    found = False
-    for i in range(0,len(userList)):
-        if userList[i] == user:
-            index = i
-            found = True
-    if found == True:
-        userList.remove(user)
-    else:
-        for i in range (0, len(memberList)):
-            if memberList[i] == user:
-                index = i
-                found = True
     f = open("users.txt","r")
     lines = f.readlines()
     f.close()
     f = open("users.txt","w")
-    for i in range(0,len(lines)):
-        if index != i:
-            f.write(lines[i])
+    for line in lines:
+        sections = line.split(' ')
+        if user.getPosition() == "M":
+            if user.getMemberID() != sections[1]:
+                f.write(line)
+        else:
+            if user.getUserID() != sections[1]:
+                f.write(line)
     f.close()
     print("User " + user.getName() + " Removed successfully.")
     input("Press any key to return to menu: ")
@@ -236,21 +231,7 @@ def removeCoach(coach):
     practices = []
     for i in range(0,len(schedule)):
         if coach == schedule[i].coach:
-            f = open("calendar.txt","r")
-            lines = f.readlines()
-            f.close()
-            f = open("calendar.txt","w")
-            index = 0
-            for line in lines:
-                if index != i:
-                    f.write(line)
-                index += 1
-            f.close()
-            practices.append(schedule[i])
-    for aPractice in practices:
-        for member in aPractice.getMemberList():
-            member.messageReceive(aPractice.getDate()+" Practice at "+aPractice.getTime()+" with Coach: "+aPractice.getCoach().getName()+" has been cancelled.")
-        schedule.remove(aPractice)
+            removePractice(i)
     removeUser(coach)
 
 def sortPaid(sort_order):
@@ -270,8 +251,65 @@ def sortPaid(sort_order):
     for i in memberList:
         print(i)
 
+def removePractice(index):
+    f = open("calendar.txt","r")
+    lines = f.readlines()
+    f.close()
+    f = open("calendar.txt","w")
+    i = 0
+    for line in lines:
+        if index != i:
+            f.write(line)
+        i += 1
+    f.close()
+    for member in memberList:
+        if member in prac.getMemberList():
+            member.messageReceive(prac.getDate()+" Practice at "+prac.getTime()+" with Coach: "+prac.getCoach().getName()+" has been cancelled.")
+        del schedule[index]
+    return 1
 
-def manageMemberList():
+def removePracticeMembers(index):
+    stillRemoving = True
+    while(stillRemoving):
+        for i in range(0,len(schedule[index].getMemberList())):
+            print(str(i+1)+") "+schedule[index].getMemberList()[i])
+        answer = input("Select Member Number to Remove: ")
+        member = schedule[index].getMemberList()[int(answer)-1]
+        f = open("calendar.txt")
+        lines = f.readlines()
+        f.close()
+        f = open("calendar.txt","w")
+        for i in range(0,len(lines)):
+            line = lines[i]
+            if i == index:
+                line = line.replace(" "+member.getMemberID(),"")
+            f.write(line)
+        f.close()
+        schedule[index].removeMember(member)
+        print("M#"+member.getMemberID()+" has been removed.")
+        answer = input("Would you like to remove another member? \"Y\" or \"N\"")
+        if answer == "N":
+            stillRemoving = False
+
+
+def manageSchedule(coach):
+    for i in range(0,len(schedule)):
+        if schedule[i].getCoach() == coach:
+            print(str(i+1)+") - "+schedule[i])
+    answer = input("Enter Practice Number to Manage: ")
+    prac = schedule[int(answer) - 1]
+    print("Would you like to:\n1) Remove Schedule\n2) Schedule Member\n3) Remove Member")
+    answer = input("Enter Option Number: ")
+    if answer == "1":
+        removePractice(int(answer) - 1)
+    elif answer == "2":
+        
+    elif answer == "3":
+        removePracticeMembers(int(answer) - 1)
+    
+    return 1
+
+def manageMemberList(prac,coach):
     return 1
 
 main()
