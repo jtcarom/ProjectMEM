@@ -49,7 +49,7 @@ def setup():
 
 
 def login():
-    print("\nLogin Menu\n----------\n (1): Login\n (2): Create an account\n")
+    print("\nLogin Menu\n----------\n (1): Login\n (2): Create an account\n (3): Exit System\n")
     answer = input("Enter option number: ")
     if answer == "1":
         userid = input("\nEnter your user ID: ")
@@ -78,14 +78,18 @@ def login():
                 memberMenu(tempUser)
             else:
                 print("Successfully logged in as " + login.getPosition() + "#" + login.getUserID() + "!")
-                menu()
+                menu(tempUser)
     elif answer == "2":
         addUser("M")
+    elif answer == "3":
+        exit()
+    else:
+        print("Sorry, please enter in 1, 2 or 3.")
                     
-def menu():
+def menu(user):
     # Here is where all menu options will be, such as:
     # Add new member, See Notifications, Class Schedule, Financials of the business (For Treasurer), etc.
-    print("\nMenu\n----\n 1) Manage coach list \n 2) View members\n")
+    print("\nMenu\n----\n 1) Manage coach list \n 2) View members\n 3) Manage Coach Schedule\n 4) Logout")
     checkInput = False
     answer = input("Enter option number: ")
     while (not checkInput):
@@ -95,13 +99,19 @@ def menu():
         elif answer == "2":
             checkInput = True
             viewMembers()
+        elif answer == "3":
+            checkInput = True
+            manageSchedule(user)
+        elif answer == "4":
+            checkInput = True
+            login()
         else:
             answer = input("Incorrect option number, please re-enter: ")
 
 
 def memberMenu(member):
     #Menu options for members
-    print("\nMember Menu\n-----------\n 1) Insert option here...\n 2) ...\n")
+    print("\nMember Menu\n-----------\n 1) Insert option here...\n 2) Pay Outstanding Payment\n3) Join a Practice\n4) View My Schedule\n")
     if int(member.getFrequency()) > int(member.getPaid()):            #if the member has skipped payment once
         print("REMINDER: Due to a skipped payment, you are now subject to a penalty fee and possible exclusion from the group.")
     if int(member.getFrequency()) < int(member.getPaid()):
@@ -112,19 +122,19 @@ def memberMenu(member):
         if answer == "1":
             checkInput = True
         elif answer == "2":
-            if int(login.getFrequency()) > int(login.getPaid()):
-                payPractice()
+            if int(member.getFrequency()) > int(member.getPaid()):
+                payPractice(member)
                 amount = 10.0
                 fee = 5.0
-                userList[treasurerIndex].messageReceive("M#"+login.getMemberID()+" has paid an outstanding payment of"+str(amount+fee)+".")
+                userList[treasurerIndex].messageReceive("M#"+member.getMemberID()+" has paid an outstanding payment of"+str(amount+fee)+".")
                 input("Enter any key to return to menu: ")
-                memberMenu(login)
+                memberMenu(member)
             else:
                 print("You have no outstanding payments to make.")
         elif answer == "3":
-            joinPractice()
-        elif answer == "4"
-            viewMemberSchedule()
+            joinPractice(member)
+        elif answer == "4":
+            viewMemberSchedule(member)
         else:
             answer = input("Incorrect option number, please re-enter: ")
 
@@ -293,7 +303,7 @@ def removePracticeMembers(index):
     stillRemoving = True
     while(stillRemoving):
         for i in range(0,len(schedule[index].getMemberList())):
-            print(str(i+1)+") "+schedule[index].getMemberList()[i])
+            print(" "+str(i+1)+") "+str(schedule[index].getMemberList()[i]))
         answer = input("Select Member Number to Remove: ")
         mem = schedule[index].getMemberList()[int(answer)-1]
         removeAPracticeMember(index,int(answer)-1)
@@ -324,12 +334,12 @@ def addPracticeMembers(index):
     stillAdding = True
     while(stillAdding):
         for i in range(0,len(memberList)):
-            print(str(i+1)+") "+memberList[i])
-        answer = input("Enter Member Number to Add:")
+            print(" "+str(i+1)+") "+str(memberList[i]))
+        answer = input("Enter Member Number to Add: ")
         mem = memberList[int(answer)-1]
         addAPracticeMember(index,int(answer)-1)
         print("M#"+mem.getMemberID()+" has been added.")
-        answer = input("Would you like to add another member? \"Y\" or \"N\"")
+        answer = input("Would you like to add another member? \"Y\" or \"N\": ")
         if answer == "N":
             stillAdding = False
     return 1
@@ -349,6 +359,7 @@ def addAPracticeMember(index,memIndex):
                 line = line + "\n"
         f.write(line)
     f.close()
+    prac = schedule[index]
     memberList[memIndex].messageReceive("You have been added to the "+prac.getDate()+
     " Practice at "+prac.getTime()+" with Coach "+prac.getCoach().getName()+". Please contact "+prac.getCoach().getNumber()+" for more details.")
     return 1
@@ -361,55 +372,55 @@ def addPractice(coach):
     schedule.append(practice.Practice(date,time,coach))
     print(date+" Practice at "+time+" has been added.")
     input("Enter any key to return to menu: ")
-    menu()
+    menu(coach)
 
 def manageSchedule(coach):
     for i in range(0,len(schedule)):
         if schedule[i].getCoach() == coach:
-            print(str(i+1)+") - "+schedule[i])
+            print(" "+str(i+1)+") - "+str(schedule[i]))
     answer = input("Enter Practice Number to Manage,\"A\" to add a Practice or \"E\" to exit back to menu: ")
     if answer == "A":
         addPractice(coach)
     elif answer == "E":
-        menu()
+        menu(coach)
     prac = schedule[int(answer) - 1]
     print("Would you like to:\n1) Cancel Practice\n2) Add a Member\n3) Remove a Member")
-    answer = input("Enter Option Number: ")
-    if answer == "1":
+    option = input("Enter Option Number: ")
+    if option == "1":
         removePractice(int(answer) - 1)
-    elif answer == "2":
+    elif option == "2":
         addPracticeMembers(int(answer)-1)
-    elif answer == "3":
+    elif option == "3":
         removePracticeMembers(int(answer) - 1)
     input("Enter any key to return to menu: ")
-    menu()
+    menu(coach)
 
-def joinPractice():
+def joinPractice(mem):
     for i in range(0,len(schedule)):
-        print(str(i+1)+") "+schedule[i])
+        print(" "+str(i+1)+") "+str(schedule[i]))
     answer = input("Enter Practice # you would like to join or \"E\" if you would like to exit to the menu: ")
     if answer == "E": 
         menu()
     index = int(answer)-1
-    addAPracticeMember(index,memberList.index(login))
-    userList[userList.index(schedule[index].getCoach())].messageReceive("M#"+login.getMemberID()+" "+login.getName()+" has joined your "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
-    userList[treasurerIndex].messageReceive("M#"+login.getMemberID()+" "+login.getName()+" has joined Coach "+schedule[index].getCoach().getName()+"'s "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
+    addAPracticeMember(index,memberList.index(mem))
+    userList[userList.index(schedule[index].getCoach())].messageReceive("M#"+mem.getMemberID()+" "+mem.getName()+" has joined your "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
+    userList[treasurerIndex].messageReceive("M#"+mem.getMemberID()+" "+mem.getName()+" has joined Coach "+schedule[index].getCoach().getName()+"'s "+schedule[index].getDate()+" practice at "+schedule[index].getTime())
     input("Enter any key to return to menu: ")
-    memberMenu(login)
+    memberMenu(mem)
 
-def payPractice():
+def payPractice(mem):
     print("Payment Methods:\n1) Credit Card\n2) Debit")
     input("Enter Option Number")
     input("Please Tap Card, then enter any key: ")
-    memberList[memberList.index(login)].pay()
+    memberList[memberList.index(mem)].pay()
     userfile = open("users.txt","r")
     lines = userfile.lines()
     userfile.close()
     userfile = open("users.txt","w")
     for line in lines:
         sections = line.split(' ')
-        if login.getMemberID() == sections[1]:
-            line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(login)].getPaid())
+        if mem.getMemberID() == sections[1]:
+            line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(mem)].getPaid())
         userfile.write(line)
     userfile.close()
     print("Payment Processed.")
