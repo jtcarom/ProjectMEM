@@ -348,11 +348,25 @@ def addAPracticeMember(index,memIndex):
     " Practice at "+prac.getTime()+" with Coach "+prac.getCoach().getName()+". Please contact "+prac.getCoach().getNumber()+" for more details.")
     return 1
 
+def addPractice(coach):
+    date = input("Please Enter Date of Practice \"mm/dd\": ")
+    time = input("Please Enter Time of Practice \"hh:mm-hh:mm(AM/PM)\": ")
+    f = open("calendar.txt","a")
+    f.write("\n"+date+" "+time+" "+coach.getUserID())
+    schedule.append(practice.Practice(date,time,coach))
+    print(date+" Practice at "+time+" has been added.")
+    input("Enter any key to return to menu: ")
+    menu()
+
 def manageSchedule(coach):
     for i in range(0,len(schedule)):
         if schedule[i].getCoach() == coach:
             print(str(i+1)+") - "+schedule[i])
-    answer = input("Enter Practice Number to Manage: ")
+    answer = input("Enter Practice Number to Manage,\"A\" to add a Practice or \"E\" to exit back to menu: ")
+    if answer == "A":
+        addPractice(coach)
+    elif answer == "E":
+        menu()
     prac = schedule[int(answer) - 1]
     print("Would you like to:\n1) Cancel Practice\n2) Add a Member\n3) Remove a Member")
     answer = input("Enter Option Number: ")
