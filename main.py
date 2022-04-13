@@ -111,7 +111,7 @@ def menu(user):
 
 def memberMenu(member):
     #Menu options for members
-    print("\nMember Menu\n-----------\n 1) Insert option here...\n 2) Pay Outstanding Payment\n3) Join a Practice\n4) View My Schedule\n")
+    print("\nMember Menu\n-----------\n 1) Insert option here...\n 2) Pay for Practice\n3) Join a Practice\n4) View My Schedule\n")
     if int(member.getFrequency()) > int(member.getPaid()):            #if the member has skipped payment once
         print("REMINDER: Due to a skipped payment, you are now subject to a penalty fee and possible exclusion from the group.")
     if int(member.getFrequency()) < int(member.getPaid()):
@@ -122,15 +122,7 @@ def memberMenu(member):
         if answer == "1":
             checkInput = True
         elif answer == "2":
-            if int(member.getFrequency()) > int(member.getPaid()):
-                payPractice(member)
-                amount = 10.0
-                fee = 5.0
-                userList[treasurerIndex].messageReceive("M#"+member.getMemberID()+" has paid an outstanding payment of"+str(amount+fee)+".")
-                input("Enter any key to return to menu: ")
-                memberMenu(member)
-            else:
-                print("You have no outstanding payments to make.")
+            payPractice(member)           
         elif answer == "3":
             joinPractice(member)
         elif answer == "4":
@@ -409,6 +401,22 @@ def joinPractice(mem):
     memberMenu(mem)
 
 def payPractice(mem):
+    print("Your Practices:\n")
+    index = 0
+    for aPractice in schedule:
+        if member in aPractice.getMemberList():
+            print(" "+str(index+1)+") "+str(aPractice))
+            index += 1
+    print(" "+str(index+1)+") Exit back to menu")
+    answer = input("Please Select Practice or Option Number:")
+    if answer == str(index+1):
+        memberMenu(mem)
+    index = int(answer) - 1
+    #
+    # Here, Call Some Function to determine price 
+    # for ex. cost = getDiscount(mem)
+    #
+    cost = 0
     print("Payment Methods:\n1) Credit Card\n2) Debit")
     input("Enter Option Number")
     input("Please Tap Card, then enter any key: ")
@@ -423,7 +431,10 @@ def payPractice(mem):
             line = line.replace(sections[10].replace("\n",""),memberList[memberList.index(mem)].getPaid())
         userfile.write(line)
     userfile.close()
+    userList[treasurerIndex].messageReceive("M#"+mem.getMemberID()+" has paid an amount of"+str(cost)+" for the "+schedule[index].getDate()+" practice at "+schedule[index].getTime()+" with Coach "+schedule[index].getCoach().getName()+".")
+    userList[userList.index(schedule[index].getCoach())].messageReceive("M#"+mem.getMemberID()+" has paid an amount of"+str(cost)+" for the "+schedule[index].getDate()+" practice at "+schedule[index].getTime()+".")
     print("Payment Processed.")
-    return 1
+    input("Enter any key to return to menu: ")
+    memberMenu(mem)
 
 main()
